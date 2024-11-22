@@ -31,7 +31,7 @@ public class PlanetEditorWindow : EditorWindow {
         // Find an active Universe object in the scene
         Universe universe = FindObjectOfType<Universe>();
         if (universe != null) {
-            universe.CreatePlanet(position, velocity, mass, radius);
+            universe.CreatePlanet(position, velocity, mass, radius, new Color(Random.value, Random.value, Random.value));
         } else {
             Debug.LogError("Universe object not found in the scene!");
         }
