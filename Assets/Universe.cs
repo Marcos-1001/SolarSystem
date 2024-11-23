@@ -14,16 +14,35 @@ public class Universe : MonoBehaviour {
     public static float timeStep= 0.05f;
 
     public Planet[] planets;
-    public XRRayInteractor rayInteractor;
     public float length = 50;
 
     public Canvas infoCanvas;
-    private bool delayB = false; 
+    private bool delayB = false;
+
+
+    
 
 
     private Planet temporaryPlanet;
 
-    
+    public Transform rightHandAnchor; 
+    private LineRenderer lineRenderer;
+
+
+    public void Start()
+    {
+        lineRenderer = gameObject.AddComponent<LineRenderer>();
+        // Configure LineRenderer properties
+        lineRenderer.startWidth = 0.05f;
+        lineRenderer.endWidth = 0.05f;
+        lineRenderer.material = new Material(Shader.Find("Unlit/Color"));
+        lineRenderer.startColor = Color.cyan;
+        lineRenderer.endColor = Color.cyan;
+
+        // Set position count for a simple ray (2 points: start and end)
+        lineRenderer.positionCount = 2;
+
+    }
     public void CreatePlanet(Vector3 position, Vector3 velocity, float mass, float radius, Color color){
         // Instantiate a new Planet GameObject
         //GameObject planetObject = new GameObject("Planet");
@@ -55,36 +74,50 @@ public class Universe : MonoBehaviour {
         Debug.Log(position);
     }
     public void Update(){
+
+        Vector3 startPoint = rightHandAnchor.position;
+        Vector3 endPoint = startPoint + rightHandAnchor.forward * length;
+
+        
+        lineRenderer.SetPosition(0, startPoint);
+        lineRenderer.SetPosition(1, endPoint);
+
         UpdatePlanets(planets);
         CheckRayPlanetCollision();
 
-        if (isBPressed() && !delayB){
+        if (OVRInput.GetDown(OVRInput.Button.Two) && !delayB){
             delayB = true;
 
             // render a temporary planet that follows the controller
-            Vector3 position = rayInteractor.transform.position + rayInteractor.transform.forward * length;
+            Vector3 rayOrigin = rightHandAnchor.position;
+            Vector3 rayDirection = rightHandAnchor.forward;
+            Vector3 endpoint = rayOrigin + rayDirection * length;
+
+
             Vector3 velocity = Vector3.zero;
             float mass = 1;
             float radius = 20f;
             Color color = new Color(Random.Range(0, 1f), Random.Range(0, 1f), Random.Range(0, 1f));                    
             temporaryPlanet = new GameObject("Planet").AddComponent<Planet>();
-            temporaryPlanet.Initialize(position, velocity, radius, color);
-            temporaryPlanet.isRemovable = false;            
-
+            temporaryPlanet.Initialize(endpoint, velocity, radius, color);
+            
                 
 
-        } else if (!isBPressed() && delayB){
-            delayB = false;            
+        } else if (OVRInput.GetDown(OVRInput.Button.Two) && delayB){
+            delayB = false;
             // create the planet
-            Vector3 position = rayInteractor.transform.position + rayInteractor.transform.forward * length;
+            Vector3 rayOrigin = rightHandAnchor.position;
+            Vector3 rayDirection = rightHandAnchor.forward;
+            Vector3 endpoint = rayOrigin + rayDirection * length;
+
             Vector3 velocity = Vector3.zero;
             float mass = 1;                        
             Destroy(temporaryPlanet.gameObject);
-            CreatePlanet(position, velocity, mass, temporaryPlanet.radius, temporaryPlanet.color);
+            CreatePlanet(endpoint, velocity, mass, temporaryPlanet.radius, temporaryPlanet.color);
         }
 
         if (temporaryPlanet != null){
-            temporaryPlanet.transform.position = rayInteractor.transform.position + rayInteractor.transform.forward * length;
+            temporaryPlanet.transform.position = rightHandAnchor.position + rightHandAnchor.transform.forward * length;
         }
 
         AdjustRayLength();
@@ -167,7 +200,14 @@ public class Universe : MonoBehaviour {
     }
 
     private void CheckRayPlanetCollision(){
-        if (rayInteractor.TryGetCurrent3DRaycastHit(out RaycastHit hit)){
+        Ray ray = new Ray(rightHandAnchor.position, rightHandAnchor.forward);
+
+        for(int i  =0; i< planets.Length; i++)
+        {
+            planets[i].selectionHighlight_deactivate(); 
+        }
+
+        if (Physics.Raycast(ray, out RaycastHit hit, 10000)){
 
             Planet planet  = hit.collider.gameObject.GetComponent<Planet>();
 
@@ -175,13 +215,18 @@ public class Universe : MonoBehaviour {
             if (planet == null ){                
                 return;
             }
+
+            planet.selectionHighlight_activate();
+
+
+
             TextMeshProUGUI infoText = infoCanvas.GetComponentInChildren<TextMeshProUGUI>();
             infoText.text = "Mass: " + planet.mass + "\n" + "Radius: " + planet.radius + "\n" + "Velocity: " + planet.velocity + "\n" + "Position: " + planet.transform.position + "\n" + "Name: " + planet.name;
 
             
                         
 
-            if(isAPressed()){// Remove the planet
+            if(OVRInput.GetDown(OVRInput.Button.One)){// Remove the planet
                 for (int i = 0; i < planets.Length; i++){
                     if (planets[i].gameObject == hit.collider.gameObject && planets[i].isRemovable){
                         Remove_Planet(i);
@@ -195,45 +240,16 @@ public class Universe : MonoBehaviour {
         }        
     }
 
-    private bool isAPressed(){
-        UnityEngine.XR.InputDevice rhand = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
-        bool isPressed = false;
-        if (rhand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primaryButton, out isPressed) && isPressed)
-        {
-            Debug.Log("Primary button pressed");
-            isPressed= true;
-        }
-        return isPressed;                
-    }
-
-    private bool isBPressed(){
-        UnityEngine.XR.InputDevice rhand = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
-        bool isPressed = false;
-        if (rhand.TryGetFeatureValue(UnityEngine.XR.CommonUsages.secondaryButton, out isPressed) && isPressed)
-        {
-            Debug.Log("Secondary button pressed");
-            isPressed= true;
-        }
-        return isPressed;                
-    }
-
       private void AdjustRayLength()
     {
-        // Get the right-hand controller
-        InputDevice leftHandDevice = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
-
-        // Read joystick vertical axis (Y-axis)
-        Vector2 joystickInput;
-        if (leftHandDevice.TryGetFeatureValue(CommonUsages.primary2DAxis, out joystickInput))
-        {
-            // Adjust the ray length based on joystick Y-axis
-            length += joystickInput.y * 10f * Time.deltaTime;
-            length = Mathf.Clamp(length, 20, 250); // Clamp to min and max values
-            Debug.Log("Length: " + length);
-        }
+        float joystickY = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick).y;
+        length += joystickY * 10f * Time.deltaTime;
+        length = Mathf.Clamp(length, 20, 200);
     }
 
     public void UpdatePlanets(Planet[] planets){
+
+
         checkPlanets_collisions(planets);
 
         for (int i = 0; i < planets.Length; i++){

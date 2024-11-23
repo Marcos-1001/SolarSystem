@@ -18,7 +18,7 @@ public class Planet : MonoBehaviour
     public bool isRemovable = false;
     public string name; 
     public GameObject selectionHighlight;
-    private XRGrabInteractable grabInteractable;
+    //private XRGrabInteractable grabInteractable;
 
     public MeshFilter meshFilter;
     public MeshRenderer meshRenderer;
@@ -105,12 +105,12 @@ public class Planet : MonoBehaviour
         }
 
         // Set up XRGrabInteractable
-        grabInteractable = gameObject.GetComponent<XRGrabInteractable>();
+        /*grabInteractable = gameObject.GetComponent<XRGrabInteractable>();
         if (grabInteractable == null)
         {
             grabInteractable = gameObject.AddComponent<XRGrabInteractable>();
             Debug.Log("Added XRGrabInteractable to " + gameObject.name);
-        }
+        }*/
         
                 
         
@@ -137,8 +137,8 @@ public class Planet : MonoBehaviour
 
         // Add listeners for select events
         
-        grabInteractable.hoverEntered.AddListener(OnHoverEntered);
-        grabInteractable.hoverExited.AddListener(OnHoverExited);
+        //grabInteractable.hoverEntered.AddListener(OnHoverEntered);
+        //grabInteractable.hoverExited.AddListener(OnHoverExited);
 
 
 
@@ -146,25 +146,16 @@ public class Planet : MonoBehaviour
         Debug.Log("Planet initialized: " + gameObject.name);
         
     }
-
-    private void OnHoverEntered(HoverEnterEventArgs args)
+    public void selectionHighlight_activate()
     {
-        
-        
         selectionHighlight.GetComponent<MeshRenderer>().enabled = true;
-
-
-
-        Debug.Log("Hover started on planet: " );
-
     }
-
-    private void OnHoverExited(HoverExitEventArgs args)
+    public void selectionHighlight_deactivate()
     {
         selectionHighlight.GetComponent<MeshRenderer>().enabled = false;
-        Debug.Log("Hover ended on planet: " );
     }
 
+   
 
    
     
