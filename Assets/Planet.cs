@@ -14,7 +14,9 @@ public class Planet : MonoBehaviour
     public float radius; 
     public Vector3 velocity ;
     public float mass ;
+    public Color color;
     public bool isRemovable = false;
+    public string name; 
     public GameObject selectionHighlight;
     private XRGrabInteractable grabInteractable;
 
@@ -26,13 +28,13 @@ public class Planet : MonoBehaviour
 
     Rigidbody rb;
     // collider
-    private SphereCollider sphereCollider;
+    public SphereCollider sphereCollider;
 
 
     
     public void Initialize(Vector3 position, Vector3 initialVelocity, float radius, Color color){
         velocity = initialVelocity;
-
+        this.color = color;
         transform.position = position;
         this.radius = radius;
         mass = 5.5f * (4f / 3f) * Mathf.PI * Mathf.Pow(radius, 3);;
@@ -57,6 +59,7 @@ public class Planet : MonoBehaviour
 
         // Assign to Rigidbody if available
         // Initialize the planet with position, velocity, and mass
+        // Gizmos
         meshFilter = gameObject.AddComponent<MeshFilter>();
         
         meshFilter.mesh = Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
@@ -66,7 +69,7 @@ public class Planet : MonoBehaviour
         meshRenderer.material = new Material(Shader.Find("Universal Render Pipeline/Lit"))
         {
             // set a random color 
-            color = new Color(color .r, color .g, color .b, 1.0f)
+            color = new Color(this.color .r, this.color .g, this.color .b, 1.0f)
         };        
 
         transform.localScale = Vector3.one * radius;
@@ -74,7 +77,15 @@ public class Planet : MonoBehaviour
         // set the scale of the selection highlight to be slightly larger than the planet
 
         selectionHighlight.transform.localScale = Vector3.one * 1.85f;
-
+        // generate a random name 
+        for (int i = 0; i < 10; i++){
+            if (i % 2 == 0){
+                name += Random.Range(0, 9).ToString();
+            }
+            else{
+                name += (char)Random.Range(65, 90);
+            }
+        }
         
     }
 
@@ -112,8 +123,7 @@ public class Planet : MonoBehaviour
 
         selectionHighlight.AddComponent<MeshFilter>().mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
         selectionHighlight.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Unlit/Color"));
-
-        selectionHighlight.GetComponent<MeshRenderer>().material.color = new Color(0, 0, .2f, 0);
+        selectionHighlight.GetComponent<MeshRenderer>().material.color = new Color(0, 0, 0, 0.5f);
         
         
         
@@ -129,6 +139,10 @@ public class Planet : MonoBehaviour
         
         grabInteractable.hoverEntered.AddListener(OnHoverEntered);
         grabInteractable.hoverExited.AddListener(OnHoverExited);
+
+
+
+        
         Debug.Log("Planet initialized: " + gameObject.name);
         
     }
@@ -138,8 +152,7 @@ public class Planet : MonoBehaviour
         
         
         selectionHighlight.GetComponent<MeshRenderer>().enabled = true;
-        
-        
+
 
 
         Debug.Log("Hover started on planet: " );
@@ -151,6 +164,7 @@ public class Planet : MonoBehaviour
         selectionHighlight.GetComponent<MeshRenderer>().enabled = false;
         Debug.Log("Hover ended on planet: " );
     }
+
 
    
     
