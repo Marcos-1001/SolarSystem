@@ -24,6 +24,7 @@ public class Planet : MonoBehaviour
     public MeshRenderer meshRenderer;
 
     
+    private TrailRenderer trailRenderer;
 
 
     Rigidbody rb;
@@ -86,6 +87,9 @@ public class Planet : MonoBehaviour
                 name += (char)Random.Range(65, 90);
             }
         }
+
+        trailRenderer.startColor = new Color(color.r, color.g, color.b, 0.5f);
+        trailRenderer.endColor = new Color(color.r, color.g, color.b, 0.0f);
         
     }
 
@@ -104,14 +108,13 @@ public class Planet : MonoBehaviour
             Debug.Log("Added SphereCollider to " + gameObject.name);
         }
 
-        // Set up XRGrabInteractable
-        /*grabInteractable = gameObject.GetComponent<XRGrabInteractable>();
-        if (grabInteractable == null)
-        {
-            grabInteractable = gameObject.AddComponent<XRGrabInteractable>();
-            Debug.Log("Added XRGrabInteractable to " + gameObject.name);
-        }*/
+        trailRenderer = gameObject.AddComponent<TrailRenderer>();
+        trailRenderer.material = new Material(Shader.Find("Unlit/Color"));
         
+        trailRenderer.startWidth = 0.5f;
+        trailRenderer.endWidth = 0.0f;
+        trailRenderer.time = 10.0f;
+
                 
         
 
@@ -123,7 +126,7 @@ public class Planet : MonoBehaviour
 
         selectionHighlight.AddComponent<MeshFilter>().mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
         selectionHighlight.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Unlit/Color"));
-        selectionHighlight.GetComponent<MeshRenderer>().material.color = new Color(0, 0, 0, 0.5f);
+        selectionHighlight.GetComponent<MeshRenderer>().material.color = new Color(0.1f, 0.1f, 0.1f, 0.2f);
         
         
         
