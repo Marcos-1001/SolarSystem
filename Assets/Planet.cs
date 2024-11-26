@@ -22,11 +22,11 @@ public class Planet : MonoBehaviour
 
     public MeshFilter meshFilter;
     public MeshRenderer meshRenderer;
-
+    public GameObject vfx_explosion; 
     
     private TrailRenderer trailRenderer;
 
-
+    private GameObject explosion; 
     Rigidbody rb;
     // collider
     public SphereCollider sphereCollider;
@@ -57,25 +57,27 @@ public class Planet : MonoBehaviour
         // Initialize sphere collider position 
         sphereCollider.center = Vector3.zero;
 
-
-        // Assign to Rigidbody if available
-        // Initialize the planet with position, velocity, and mass
-        // Gizmos
         meshFilter = gameObject.AddComponent<MeshFilter>();
         
         meshFilter.mesh = Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
 
         meshRenderer = gameObject.AddComponent<MeshRenderer>();
         // URP
-        meshRenderer.material = new Material(Shader.Find("Universal Render Pipeline/Lit"))
-        {
-            // set a random color 
-            color = new Color(this.color .r, this.color .g, this.color .b, 1.0f)
-        };        
+
+        
+        vfx_explosion = Resources.Load<GameObject>("pf_vfx-inf_psys_demo_loop_ultranova2");
+
+
+
+        
+        // use an existing material in assets
+        meshRenderer.material = Resources.Load<Material>("PlanetMaterial");
+
+        meshRenderer.material.color = color;
 
         transform.localScale = Vector3.one * radius;
 
-        // set the scale of the selection highlight to be slightly larger than the planet
+
 
         selectionHighlight.transform.localScale = Vector3.one * 1.85f;
         // generate a random name 
@@ -151,10 +153,15 @@ public class Planet : MonoBehaviour
     }
     public void selectionHighlight_activate()
     {
-        selectionHighlight.GetComponent<MeshRenderer>().enabled = true;
+        explosion = Instantiate(vfx_explosion, transform.position, Quaternion.identity);
+        explosion.transform.localScale = Vector3.one * radius * 20;
+
+        selectionHighlight.GetComponent<MeshRenderer>().enabled = true;        
     }
     public void selectionHighlight_deactivate()
     {
+        
+
         selectionHighlight.GetComponent<MeshRenderer>().enabled = false;
     }
 
