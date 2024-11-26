@@ -22,11 +22,11 @@ public class Planet : MonoBehaviour
 
     public MeshFilter meshFilter;
     public MeshRenderer meshRenderer;
-    public GameObject vfx_explosion; 
+    //public GameObject vfx_explosion 
     
     private TrailRenderer trailRenderer;
 
-    private GameObject explosion; 
+    //private GameObject explosion; 
     Rigidbody rb;
     // collider
     public SphereCollider sphereCollider;
@@ -65,7 +65,6 @@ public class Planet : MonoBehaviour
         // URP
 
         
-        vfx_explosion = Resources.Load<GameObject>("pf_vfx-inf_psys_demo_loop_ultranova2");
 
 
 
@@ -153,8 +152,8 @@ public class Planet : MonoBehaviour
     }
     public void selectionHighlight_activate()
     {
-        explosion = Instantiate(vfx_explosion, transform.position, Quaternion.identity);
-        explosion.transform.localScale = Vector3.one * radius * 20;
+        //explosion = Instantiate(vfx_explosion, transform.position, Quaternion.identity);
+        //explosion.transform.localScale = Vector3.one * radius * 20;
 
         selectionHighlight.GetComponent<MeshRenderer>().enabled = true;        
     }

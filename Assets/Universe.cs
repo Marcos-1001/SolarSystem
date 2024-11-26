@@ -28,7 +28,7 @@ public class Universe : MonoBehaviour {
     public Transform rightHandAnchor; 
     private LineRenderer lineRenderer;
 
-
+    public GameObject explosionPrefab;
     public void Start()
     {
         lineRenderer = gameObject.AddComponent<LineRenderer>();
@@ -42,6 +42,8 @@ public class Universe : MonoBehaviour {
         // Set position count for a simple ray (2 points: start and end)
         lineRenderer.positionCount = 2;
 
+        explosionPrefab = Resources.Load<GameObject>("Explosion");
+        Debug.Log(explosionPrefab.name);
     }
     public void CreatePlanet(Vector3 position, Vector3 velocity, float mass, float radius, Color color){
         // Instantiate a new Planet GameObject
@@ -125,7 +127,7 @@ public class Universe : MonoBehaviour {
     }
 
     public void Remove_Planet(int idx){
-        
+        Instantiate(explosionPrefab, planets[idx].transform.position, Quaternion.identity);
         Destroy(planets[idx].gameObject);
         Planet[] newPlanets = new Planet[planets.Length - 1];
         for (int i = 0; i < idx; i++){
@@ -135,6 +137,8 @@ public class Universe : MonoBehaviour {
             newPlanets[i - 1] = planets[i];
         }
         planets = newPlanets;
+
+
         
     }
 
