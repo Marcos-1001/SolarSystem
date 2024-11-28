@@ -126,7 +126,7 @@ public class Planet : MonoBehaviour
         selectionHighlight.transform.parent = transform;        
 
         selectionHighlight.AddComponent<MeshFilter>().mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
-        selectionHighlight.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Unlit/Color"));
+        selectionHighlight.AddComponent<MeshRenderer>().material = Resources.Load<Material>("TransparentBox");
         selectionHighlight.GetComponent<MeshRenderer>().material.color = new Color(0.1f, 0.1f, 0.1f, 0.2f);
         
         

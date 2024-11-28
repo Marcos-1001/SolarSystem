@@ -26,7 +26,7 @@ public class Universe : MonoBehaviour {
     private Planet temporaryPlanet;
 
     public Transform rightHandAnchor; 
-    private LineRenderer lineRenderer;
+    public LineRenderer lineRenderer;
 
     public GameObject explosionPrefab;
     public void Start()
@@ -210,6 +210,9 @@ public class Universe : MonoBehaviour {
         {
             planets[i].selectionHighlight_deactivate(); 
         }
+        // unable the canvas image
+
+        
 
         if (Physics.Raycast(ray, out RaycastHit hit, 10000)){
 
@@ -226,7 +229,8 @@ public class Universe : MonoBehaviour {
 
             TextMeshProUGUI infoText = infoCanvas.GetComponentInChildren<TextMeshProUGUI>();
             infoText.text = "Mass: " + planet.mass + "\n" + "Radius: " + planet.radius + "\n" + "Velocity: " + planet.velocity + "\n" + "Position: " + planet.transform.position + "\n" + "Name: " + planet.name;
-
+            Image image = infoCanvas.GetComponentInChildren<Image>();
+            image.enabled = true;
             
                         
 
@@ -238,10 +242,13 @@ public class Universe : MonoBehaviour {
                     }
                 }                
             }
-            
-            
-            
-        }        
+
+        }  else{
+            TextMeshProUGUI infoText = infoCanvas.GetComponentInChildren<TextMeshProUGUI>();
+            infoText.text = "";
+            Image image = infoCanvas.GetComponentInChildren<Image>();
+            image.enabled = false;
+        }
     }
 
       private void AdjustRayLength()
