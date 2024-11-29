@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -20,8 +21,8 @@ public class Universe : MonoBehaviour {
     private bool delayB = false;
 
 
-    
 
+    private float initial_radius = 20f; 
 
     private Planet temporaryPlanet;
 
@@ -98,10 +99,10 @@ public class Universe : MonoBehaviour {
 
             Vector3 velocity = Vector3.zero;
             float mass = 1;
-            float radius = 20f;
+            
             Color color = new Color(Random.Range(0, 1f), Random.Range(0, 1f), Random.Range(0, 1f));                    
             temporaryPlanet = new GameObject("Planet").AddComponent<Planet>();
-            temporaryPlanet.Initialize(endpoint, velocity, radius, color);
+            temporaryPlanet.Initialize(endpoint, velocity, initial_radius, color);
             
                 
 
@@ -120,6 +121,15 @@ public class Universe : MonoBehaviour {
 
         if (temporaryPlanet != null){
             temporaryPlanet.transform.position = rightHandAnchor.position + rightHandAnchor.transform.forward * length;
+            if (OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger)) { 
+                temporaryPlanet.radius +=  25f * Time.deltaTime; 
+            }
+            if (OVRInput.Get(OVRInput.Button.SecondaryHandTrigger)) { 
+                temporaryPlanet.radius -= 25f * Time.deltaTime;  
+            }
+
+                     
+            temporaryPlanet.radius = Mathf.Clamp(temporaryPlanet.radius, 20, 200);
         }
 
         AdjustRayLength();
@@ -228,7 +238,7 @@ public class Universe : MonoBehaviour {
 
 
             TextMeshProUGUI infoText = infoCanvas.GetComponentInChildren<TextMeshProUGUI>();
-            infoText.text = "Mass: " + planet.mass + "\n" + "Radius: " + planet.radius + "\n" + "Velocity: " + planet.velocity + "\n" + "Position: " + planet.transform.position + "\n" + "Name: " + planet.name;
+            infoText.text = "Masa: " + planet.mass + "\n" + "Radio: " + planet.radius + "\n" + "Velocidad: " + planet.velocity + "\n" + "Posicion: " + planet.transform.position + "\n" + "Nombre: " + planet.name;
             Image image = infoCanvas.GetComponentInChildren<Image>();
             image.enabled = true;
             
@@ -253,10 +263,21 @@ public class Universe : MonoBehaviour {
 
       private void AdjustRayLength()
     {
-        float joystickY = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick).y;
-        length += joystickY * 10f * Time.deltaTime;
-        length = Mathf.Clamp(length, 20, 200);
+
+        if (OVRInput.Get(OVRInput.Button.Three))
+        {
+            length +=  50f * Time.deltaTime;
+
+        }
+        if (OVRInput.Get(OVRInput.Button.Four))
+        {
+            length -= 50f * Time.deltaTime;
+
+        }
+
+        length = Mathf.Clamp(length, 20, 500);
     }
+    
 
     public void UpdatePlanets(Planet[] planets){
 

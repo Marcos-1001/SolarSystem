@@ -94,6 +94,14 @@ public class Planet : MonoBehaviour
         
     }
 
+    void Update()
+    {
+        mass = 5.5f * (4f / 3f) * Mathf.PI * Mathf.Pow(radius, 3);
+        transform.localScale = Vector3.one * radius;
+        selectionHighlight.transform.localScale = Vector3.one * 1.85f;
+
+    }
+
     void Awake(){
         
         rb = GetComponent<Rigidbody>();
