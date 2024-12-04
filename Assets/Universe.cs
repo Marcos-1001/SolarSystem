@@ -29,6 +29,7 @@ public class Universe : MonoBehaviour {
     public Transform rightHandAnchor; 
     public LineRenderer lineRenderer;
 
+    public AudioClip explosionSound;
     public GameObject explosionPrefab;
     public void Start()
     {
@@ -137,7 +138,23 @@ public class Universe : MonoBehaviour {
     }
 
     public void Remove_Planet(int idx){
-        Instantiate(explosionPrefab, planets[idx].transform.position, Quaternion.identity);
+        // scale the explosion vfx to the planet size
+        //Instantiate(explosionPrefab, planets[idx].transform.position, Quaternion.identity);
+        GameObject explosion = Instantiate(explosionPrefab, planets[idx].transform.position, Quaternion.identity);
+        explosion.transform.localScale = Vector3.one * planets[idx].radius / 10;
+        ParticleSystem.MainModule main = explosion.GetComponent<ParticleSystem>().main;
+        main.startColor = planets[idx].color;
+        
+        //change particles color
+        
+        // trigger the explosion sound
+
+        float volume = Mathf.Clamp(planets[idx].radius / 200f , 0.1f, 1f);
+        AudioSource.PlayClipAtPoint(explosionSound , planets[idx].transform.position, volume * 2);
+        
+
+
+
         Destroy(planets[idx].gameObject);
         Planet[] newPlanets = new Planet[planets.Length - 1];
         for (int i = 0; i < idx; i++){
