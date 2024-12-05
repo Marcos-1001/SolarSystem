@@ -11,6 +11,7 @@ public class MenuManger : MonoBehaviour
     public Canvas TutorialCanvas;
 
     public EventSystem eventSystem;
+    private bool isTutorialOpened = false; 
 
     void Start()
     {
@@ -21,27 +22,27 @@ public class MenuManger : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (eventSystem.currentSelectedGameObject == null)
-        {
-            return; 
-        }
-        if(eventSystem.currentSelectedGameObject.name == "iniciar"){
+        
+        if(OVRInput.GetDown(OVRInput.Button.One)){
             Debug.Log("Iniciar");
         }
-        if(eventSystem.currentSelectedGameObject.name == "salir"){
-            // terminate the application
+        if (OVRInput.GetDown(OVRInput.Button.Two) && !isTutorialOpened)
+        { 
+        
             Application.Quit();            
         }
-        if(eventSystem.currentSelectedGameObject.name == "tutorial"){
+        if(OVRInput.GetDown(OVRInput.Button.Two) && isTutorialOpened)
+        {
+            MenuCanvas.enabled=true;
+            TutorialCanvas.enabled=false;
+            isTutorialOpened=false;
+        }
+        if(OVRInput.GetDown(OVRInput.Button.Three)){
             //Debug.Log("Tutorial");
             MenuCanvas.enabled = false;
             TutorialCanvas.enabled = true;
         }
-        if(eventSystem.currentSelectedGameObject.name == "cerrar"){
-            //Debug.Log("Volver");
-            MenuCanvas.enabled = true;
-            TutorialCanvas.enabled = false;
-        }
+        
     }
 
     

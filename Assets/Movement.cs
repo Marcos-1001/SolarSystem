@@ -31,7 +31,10 @@ public class FreeMovement : MonoBehaviour
         HandleRotation();
 
         CharacterController characterController = playerController.GetComponent<CharacterController>();
-        characterController.enabled = false; 
+        
+        
+        characterController.enabled = false;
+
         // Get input from the left and right hand triggers
         float leftTrigger = OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger); // Left hand trigger
         float rightTrigger = OVRInput.Get(OVRInput.Axis1D.PrimaryHandTrigger); // Right hand trigger
@@ -45,6 +48,7 @@ public class FreeMovement : MonoBehaviour
             
             Vector3 verticalMovement = new Vector3(0, triggerInput, 0);
             playerController.transform.position  += verticalMovement * movementSpeed * 100f * Time.deltaTime;           
+            Debug.Log(playerController.transform.position);
         }
     }
 
