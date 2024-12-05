@@ -18,6 +18,7 @@ public class Universe : MonoBehaviour {
     public float length = 50;
 
     public Canvas infoCanvas;
+    public Canvas tutorialCanvas; 
     private bool delayB = false;
 
 
@@ -33,6 +34,7 @@ public class Universe : MonoBehaviour {
     public GameObject explosionPrefab;
     public void Start()
     {
+        tutorialCanvas.enabled = false;
         lineRenderer = gameObject.AddComponent<LineRenderer>();
         // Configure LineRenderer properties
         lineRenderer.startWidth = 0.05f;
@@ -132,7 +134,9 @@ public class Universe : MonoBehaviour {
                      
             temporaryPlanet.radius = Mathf.Clamp(temporaryPlanet.radius, 20, 200);
         }
-
+        if (OVRInput.GetDown(OVRInput.Button.Start)){
+            tutorialCanvas.enabled = tutorialCanvas.enabled ? false : true;
+        }
         AdjustRayLength();
 
     }
@@ -150,7 +154,7 @@ public class Universe : MonoBehaviour {
         // trigger the explosion sound
 
         float volume = Mathf.Clamp(planets[idx].radius / 200f , 0.1f, 1f);
-        AudioSource.PlayClipAtPoint(explosionSound , planets[idx].transform.position, volume * 2);
+        AudioSource.PlayClipAtPoint(explosionSound , planets[idx].transform.position, volume * 10);
         
 
 
@@ -311,6 +315,7 @@ public class Universe : MonoBehaviour {
             planets[i].UpdatePosition(timeStep);
         }
     }    
+
 
     
 }

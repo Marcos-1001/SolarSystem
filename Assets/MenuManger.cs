@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Meta.XR.ImmersiveDebugger.UserInterface.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class MenuManger : MonoBehaviour
 {
@@ -23,25 +24,22 @@ public class MenuManger : MonoBehaviour
     void Update()
     {
         
-        if(OVRInput.GetDown(OVRInput.Button.One)){
-            Debug.Log("Iniciar");
-        }
-        if (OVRInput.GetDown(OVRInput.Button.Two) && !isTutorialOpened)
-        { 
-        
-            Application.Quit();            
-        }
-        if(OVRInput.GetDown(OVRInput.Button.Two) && isTutorialOpened)
+        if(eventSystem.currentSelectedGameObject.name == null)
         {
-            MenuCanvas.enabled=true;
-            TutorialCanvas.enabled=false;
-            isTutorialOpened=false;
+            return; 
         }
-        if(OVRInput.GetDown(OVRInput.Button.Three)){
-            //Debug.Log("Tutorial");
-            MenuCanvas.enabled = false;
+        // by name 
+        if(eventSystem.currentSelectedGameObject.name == "iniciar" ){
+            // cargar una escena
+            SceneManager.LoadScene("SampleScene");
+        }
+        else if( eventSystem.currentSelectedGameObject.name ==  "tutorial" ){
             TutorialCanvas.enabled = true;
         }
+        else if( eventSystem.currentSelectedGameObject.name ==  "cerrar" ){
+            TutorialCanvas.enabled = false;
+        }
+
         
     }
 
